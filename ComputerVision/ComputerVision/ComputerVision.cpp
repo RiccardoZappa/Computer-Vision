@@ -17,6 +17,8 @@
 #include "framework.h"
 #include "ComputerVision.h"
 
+#include "D3D12HelloTriangle.h"
+
 HWND ComputerVision::m_hwnd = nullptr;
 
 int ComputerVision::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)

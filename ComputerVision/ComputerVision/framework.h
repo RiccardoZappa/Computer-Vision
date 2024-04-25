@@ -22,3 +22,4 @@
 #include <dxgi1_6.h>
 #include <string>
 #include <wrl.h>
+#include "D3dx12.h"
