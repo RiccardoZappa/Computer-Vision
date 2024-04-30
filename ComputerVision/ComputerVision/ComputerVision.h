@@ -21,7 +21,7 @@ class DXSample;
 class ComputerVision
 {
 public:
-    static int Run(DXSample* pSample,DXSample* pSample2, HINSTANCE hInstance, int nCmdShow);
+    static int Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow);
     static HWND GetHwnd() { return m_hwnd; }
 
 protected:
@@ -29,5 +29,4 @@ protected:
 
 private:
     static HWND m_hwnd;
-    static HWND m_hwnd2;
 };
