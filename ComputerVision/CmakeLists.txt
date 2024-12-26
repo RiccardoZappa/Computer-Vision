@@ -4,8 +4,15 @@ project(VisionFlow)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Find required packages
+if(NOT DEFINED OpenCV_DIR)
+    set(OpenCV_DIR "C:/opencv/build/x64/vc16/lib")
+endif()
+
 find_package(OpenCV REQUIRED)
+
+if(NOT OpenCV_FOUND)
+    message(FATAL_ERROR "OpenCV not found! Make sure OpenCV_DIR is set correctly.")
+endif()
 
 # Include directories
 include_directories(${OpenCV_INCLUDE_DIRS} include)
