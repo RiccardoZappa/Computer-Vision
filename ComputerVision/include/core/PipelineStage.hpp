@@ -6,10 +6,10 @@ namespace Core
     class PipelineStage
     {
     public:
-        virtual ~PipelineStage();
+        virtual ~PipelineStage() = default;
 
-        virtual cv::Mat Process(const& cv::Mat input) = 0;
+        virtual cv::Mat Process(const cv::Mat& input) = 0;
 
         virtual std::string getName() const = 0;
-    }
+    };
 }
