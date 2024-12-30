@@ -10,6 +10,13 @@ endif()
 
 find_package(OpenCV REQUIRED)
 
+# Create an interface library for RapidJSON
+add_library(RapidJSON INTERFACE)
+
+# Set the include directory for RapidJSON
+target_include_directories(RapidJSON INTERFACE "C:/rapidjson/include/rapidjson")
+
+
 if(NOT OpenCV_FOUND)
     message(FATAL_ERROR "OpenCV not found! Make sure OpenCV_DIR is set correctly.")
 endif()
@@ -24,4 +31,4 @@ file(GLOB_RECURSE SOURCES src/*.cpp src/stages/*.cpp src/core/*.cpp src/utils/*.
 add_executable(VisionFlow ${SOURCES})
 
 # Link libraries
-target_link_libraries(VisionFlow ${OpenCV_LIBS})
+target_link_libraries(VisionFlow ${OpenCV_LIBS} RapidJSON)

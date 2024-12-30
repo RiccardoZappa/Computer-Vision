@@ -1,6 +1,7 @@
 #include "core/PipelineManager.hpp"
 #include "stages/EdgeDetectionStage.hpp"
 #include <opencv2/opencv.hpp>
+#include <rapidjson.h>
 
 using namespace Core;
 using namespace Stages;
