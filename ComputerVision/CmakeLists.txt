@@ -8,6 +8,10 @@ if(NOT DEFINED OpenCV_DIR)
     set(OpenCV_DIR "C:/opencv/build/x64/vc16/lib")
 endif()
 
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED True)
+
+
 find_package(OpenCV REQUIRED)
 
 # Create an interface library for RapidJSON
@@ -25,7 +29,7 @@ endif()
 include_directories(${OpenCV_INCLUDE_DIRS} include)
 
 # Source files
-file(GLOB_RECURSE SOURCES src/*.cpp src/stages/*.cpp src/core/*.cpp src/utils/*.cpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/stages/*.cpp src/core/*.cpp src/utils/*.cpp src/cuda/*.cu)
 
 # Create executable
 add_executable(VisionFlow ${SOURCES})
