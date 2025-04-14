@@ -1,20 +1,7 @@
-#include "core/PipelineManager.hpp"
-#include "stages/EdgeDetectionStage.hpp"
 #include <opencv2/opencv.hpp>
-#include <rapidjson.h>
-
-using namespace Core;
-using namespace Stages;
 
 int main() {
-    PipelineManager manager;
-    manager.addStage(std::make_shared<EdgeDetectionStage>());
-
-    cv::Mat image = cv::imread("C:/Computer-Vision/ComputerVision/data/sample.jpg", cv::IMREAD_GRAYSCALE);
-    cv::Mat result = manager.run(image);
-
-    cv::imshow("Result", result);
-    cv::waitKey(0);
-    std::cout << "passed from here";
+    cv::Mat materis;
+    materis = cv::imread("data/sample.jpg", cv::IMREAD_COLOR );
     return 0;
 }

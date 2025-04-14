@@ -1,38 +1,13 @@
-cmake_minimum_required(VERSION 3.16)
-project(VisionFlow)
+cmake_minimum_required(VERSION 3.10)
 
+# Set the C++ standard
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if(NOT DEFINED OpenCV_DIR)
-    set(OpenCV_DIR "C:/opencv/build/x64/vc16/lib")
-endif()
+project( DisplayImage )
 
-set(CMAKE_CUDA_STANDARD 17)
-set(CMAKE_CUDA_STANDARD_REQUIRED True)
+find_package( OpenCV REQUIRED )
 
+add_executable( DisplayImage src/main.cpp )
 
-find_package(OpenCV REQUIRED)
-
-# Create an interface library for RapidJSON
-add_library(RapidJSON INTERFACE)
-
-# Set the include directory for RapidJSON
-target_include_directories(RapidJSON INTERFACE "C:/rapidjson/include/rapidjson")
-
-
-if(NOT OpenCV_FOUND)
-    message(FATAL_ERROR "OpenCV not found! Make sure OpenCV_DIR is set correctly.")
-endif()
-
-# Include directories
-include_directories(${OpenCV_INCLUDE_DIRS} include)
-
-# Source files
-file(GLOB_RECURSE SOURCES src/*.cpp src/stages/*.cpp src/core/*.cpp src/utils/*.cpp src/cuda/*.cu)
-
-# Create executable
-add_executable(VisionFlow ${SOURCES})
-
-# Link libraries
-target_link_libraries(VisionFlow ${OpenCV_LIBS} RapidJSON)
+target_link_libraries( DisplayImage ${OpenCV_LIBS} )

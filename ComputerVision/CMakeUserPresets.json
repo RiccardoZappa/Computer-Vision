@@ -1,0 +1,11 @@
+{
+    "version": 3,
+    "configurePresets": [
+      {
+        "name": "vcpkg-base", 
+        "environment": {
+            "VCPKG_ROOT": "C:/vcpkg"
+        }
+      }
+    ]
+}
