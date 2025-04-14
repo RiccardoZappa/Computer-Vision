@@ -1,5 +1,7 @@
 {
   "dependencies": [
-    "opencv"
+    "onnxruntime",
+    "opencv",
+    "protobuf"
   ]
 }

@@ -21,7 +21,31 @@ endif()
 project( DisplayImage LANGUAGES CXX CUDA)
 
 find_package( OpenCV REQUIRED )
+if(NOT OpenCV_FOUND)
+    message(FATAL_ERROR "OpenCV not found!")
+endif()
+
+# Find Protobuf
+# vcpkg installs CMake config files for Protobuf.
+find_package(Protobuf REQUIRED)
+if(NOT Protobuf_FOUND)
+    message(FATAL_ERROR "Protobuf not found!")
+endif()
+
+# Find ONNX Runtime
+# vcpkg also installs CMake config files for ONNX Runtime.
+find_package(onnxruntime REQUIRED)
+if(NOT onnxruntime_FOUND)
+    message(FATAL_ERROR "ONNX Runtime not found!")
+endif()
+
 
 add_executable( DisplayImage src/main.cpp src/cuda/myKernel.cu)
 
-target_link_libraries( DisplayImage ${OpenCV_LIBS} )
+target_link_libraries( DisplayImage PRIVATE
+    ${OpenCV_LIBS}   
+    # Protobuf target
+    protobuf::libprotobuf
+    # ONNX Runtime target
+    onnxruntime::onnxruntime 
+)
