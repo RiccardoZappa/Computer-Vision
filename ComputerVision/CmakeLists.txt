@@ -38,12 +38,13 @@ set(ONNXRUNTIME_LIBRARIES
     "${CMAKE_SOURCE_DIR}/libs/onnxruntime.lib" 
 )
 
-add_executable( DisplayImage src/main.cpp src/cuda/myKernel.cu)
+add_executable( DisplayImage src/main.cpp src/core/detector.cpp src/cuda/myKernel.cu)
 
 
 target_include_directories(DisplayImage PUBLIC
     # Linux local install to /usr/local
     "${ONNXRUNTIME_ROOTDIR}/include/onnxruntime/core/session"  # Windows local install
+    "${CMAKE_SOURCE_DIR}/include"
 )
 
 
