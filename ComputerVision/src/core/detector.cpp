@@ -2,7 +2,10 @@
 
 using namespace Core;
 
-Detector::Detector()
+Detector::Detector() :
+    m_upOrtEnviroment{},
+    m_upOrtSession{},
+    m_upOrtSessionOptions{}
 {
-    // OrtCreateEnv();
 }
+
