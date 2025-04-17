@@ -22,10 +22,5 @@ int main()
         cv::imshow("RealTime detection", frame);
         if(cv::waitKey(1) == 'q') break;
     }
-    auto providers = Ort::GetAvailableProviders();
-    for (auto provider : providers)
-    {
-        std::cout << provider << std::endl;
-    }
     return 0;
 }
