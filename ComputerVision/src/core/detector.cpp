@@ -1,3 +1,4 @@
+#include <iostream>
 #include "core/detector.hpp"
 
 using namespace Core;
@@ -8,8 +9,16 @@ Detector::Detector() :
 {
 }
 
-void Detector::initialize(std::string model)
+void Detector::initialize(const wchar_t* model)
 {
-
+    try
+    {
+        Ort::SessionOptions sessionOptions{};
+        m_upOrtSession = std::make_unique<Ort::Session>(*m_upOrtEnviroment.get(), model, sessionOptions);
+    }
+    catch(const Ort::Exception& e)
+    {
+        std::cerr << e.what() << '\n';
+    }
 }
 

@@ -8,7 +8,7 @@ namespace Core
     {
     public:
         Detector();
-        void initialize(std::string model);
+        void initialize(const wchar_t* model);
 
     private:
         std::unique_ptr<Ort::Env> m_upOrtEnviroment;
