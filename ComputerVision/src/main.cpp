@@ -1,18 +1,27 @@
 #include <opencv2/opencv.hpp>
 #include <onnxruntime_cxx_api.h>
 
+#include "camera/cameraGrabber.hpp"
 
-int main() {
-    cv::Mat frame;
-    cv::VideoCapture videoCapture;
+using namespace Camera;
 
+int main() 
+{
+    CameraGrabber grabber{};
+
+    auto videoCapture = grabber.getVideoCapture();
     int deviceID = 0;
     int ApiID = cv::CAP_ANY;
 
     videoCapture.open(deviceID, ApiID);
 
-    cv::Mat materis;
-    materis = cv::imread("data/sample.jpg", cv::IMREAD_COLOR );
+    cv::Mat frame;
+
+    while(videoCapture.read(frame))
+    {
+        cv::imshow("RealTime detection", frame);
+        if(cv::waitKey(1) == 'q') break;
+    }
     auto providers = Ort::GetAvailableProviders();
     for (auto provider : providers)
     {

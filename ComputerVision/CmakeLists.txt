@@ -38,7 +38,11 @@ set(ONNXRUNTIME_LIBRARIES
     "${CMAKE_SOURCE_DIR}/libs/onnxruntime.lib" 
 )
 
-add_executable( DisplayImage src/main.cpp src/core/detector.cpp src/cuda/myKernel.cu)
+add_executable( DisplayImage src/main.cpp 
+                src/core/detector.cpp 
+                src/cuda/myKernel.cu 
+                src/camera/cameraGrabber.cpp
+)
 
 
 target_include_directories(DisplayImage PUBLIC
