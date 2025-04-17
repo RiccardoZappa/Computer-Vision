@@ -3,6 +3,14 @@
 
 
 int main() {
+    cv::Mat frame;
+    cv::VideoCapture videoCapture;
+
+    int deviceID = 0;
+    int ApiID = cv::CAP_ANY;
+
+    videoCapture.open(deviceID, ApiID);
+
     cv::Mat materis;
     materis = cv::imread("data/sample.jpg", cv::IMREAD_COLOR );
     auto providers = Ort::GetAvailableProviders();
