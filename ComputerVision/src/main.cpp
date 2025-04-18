@@ -2,6 +2,7 @@
 #include <onnxruntime_cxx_api.h>
 
 #include "camera/cameraGrabber.hpp"
+#include "camera/frameProcessor.hpp"
 
 using namespace Camera;
 
@@ -26,15 +27,7 @@ int main()
     {
         cv::Mat blob;
 
-        blob = cv::dnn::blobFromImage(
-            frame,
-            scale_factor,
-            cv::Size(target_width,target_height),
-            cv::Scalar(0,0,0),
-            swapRB,
-            false,
-            CV_32F
-        );
+        FrameProcessor::ProcessFrame(frame, blob);
 
         // --- 4. Verify Blob Shape and Type (Optional) ---
         // Note: blob.size is a special object. Access dimensions via blob.size[index]

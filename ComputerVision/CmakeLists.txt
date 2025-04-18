@@ -42,6 +42,7 @@ add_executable( DisplayImage src/main.cpp
                 src/core/detector.cpp 
                 src/cuda/myKernel.cu 
                 src/camera/cameraGrabber.cpp
+                src/camera/frameProcessor.cpp
 )
 
 
