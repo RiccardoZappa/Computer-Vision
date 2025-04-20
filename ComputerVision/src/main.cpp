@@ -117,117 +117,116 @@ int main()
             );
 
             // --- 7. Process Output ---
-            if (!output_tensors.empty() && output_tensors.IsTensor()) {
+            for(size_t i = 0; i < output_tensors.size(); i++)
+            {
+                auto& output_tensor = output_tensors[i];
+
                 // You can optionally verify the output shape against your known output_dims
-                auto& output_tensor = output_tensors;
                 auto received_shape_info = output_tensor.GetTensorTypeAndShapeInfo();
                 auto received_shape = received_shape_info.GetShape();
                 size_t received_elements = received_shape_info.GetElementCount();
-
+                
                 if (received_shape!= output_dims || received_elements!= static_cast<size_t>(output_tensor_size)) {
-                     std::cerr << "Warning: Output shape/size mismatch! Expected: , Got: [";
-                     for(size_t i = 0; i < received_shape.size(); ++i) std::cout << received_shape[i] << " ";
-                     std::cout << "]" << std::endl;
+                    std::cerr << "Warning: Output shape/size mismatch! Expected: , Got: [";
+                    for(size_t i = 0; i < received_shape.size(); ++i) std::cout << received_shape[i] << " ";
+                    std::cout << "]" << std::endl;
                 }
-
+                
                 // Get pointer to output data (assuming float output)
                 float* output_data = output_tensor.GetTensorMutableData<float>();
-
+                
                 // Process the output_data (size = 1*84*8400 elements)
                 std::cout << "Processed frame. Output elements: " << received_elements << std::endl;
-                //... your post-processing logic...
-
-            }
-
-
-            std::vector<cv::Rect> boxes;
-            std::vector<float> confidences;
-            std::vector<int> class_ids;
-
-            const int num_proposals = static_cast<int>(output_shape); // 8400
-            const int num_params_per_proposal = static_cast<int>(output_shape); // 84
-
-            // Get scaling factors to map model output coordinates back to original frame size
-            float scale_x = static_cast<float>(frame.cols) / input_dims[8]; // frame_width / model_input_width
-            float scale_y = static_cast<float>(frame.rows) / input_dims[7]; // frame_height / model_input_height
-
-            for (int i = 0; i < num_proposals; ++i) {
-                // Pointer to the start of data for the i-th proposal
-                // output_data points to the beginning of the flat array.
-                // Accessing element [batch=0, param=j, proposal=i] requires careful indexing:
-                // index = batch_offset + param_offset + proposal_offset
-                // index = 0 * (num_params_per_proposal * num_proposals) + j * num_proposals + i
-                // Since batch=0, index = j * num_proposals + i
-
-                // Extract class scores (first NUM_CLASSES elements after the 4 box coordinates)
-                float* class_scores_ptr = output_data + (4 * num_proposals) + i;
-                auto max_score_it = std::max_element(class_scores_ptr, class_scores_ptr + (NUM_CLASSES * num_proposals), [&](float a, float b){
-                    // Need to step by num_proposals to compare scores for the same proposal 'i' across different classes 'j'
-                    return a < b;
-                });
-
-                // Find the class ID and the max score
-                int class_id = -1;
-                float max_score = 0.0f;
-                for(int j = 0; j < NUM_CLASSES; ++j) {
-                    float score = output_data[(4 + j) * num_proposals + i];
-                    if (score > max_score) {
-                        max_score = score;
-                        class_id = j;
+                    
+                
+                std::vector<cv::Rect> boxes;
+                std::vector<float> confidences;
+                std::vector<int> class_ids;
+                
+                const int num_proposals = 8400; // 8400
+                const int num_params_per_proposal = 84; // 84
+                
+                // Get scaling factors to map model output coordinates back to original frame size
+                float scale_x = static_cast<float>(frame.cols) / input_dims[8]; // frame_width / model_input_width
+                float scale_y = static_cast<float>(frame.rows) / input_dims[7]; // frame_height / model_input_height
+                
+                for (int i = 0; i < num_proposals; ++i) {
+                    // Pointer to the start of data for the i-th proposal
+                    // output_data points to the beginning of the flat array.
+                    // Accessing element [batch=0, param=j, proposal=i] requires careful indexing:
+                    // index = batch_offset + param_offset + proposal_offset
+                    // index = 0 * (num_params_per_proposal * num_proposals) + j * num_proposals + i
+                    // Since batch=0, index = j * num_proposals + i
+                    
+                    // Extract class scores (first NUM_CLASSES elements after the 4 box coordinates)
+                    float* class_scores_ptr = output_data + (4 * num_proposals) + i;
+                    auto max_score_it = std::max_element(class_scores_ptr, class_scores_ptr + (NUM_CLASSES * num_proposals), [&](float a, float b){
+                        // Need to step by num_proposals to compare scores for the same proposal 'i' across different classes 'j'
+                        return a < b;
+                    });
+                    
+                    // Find the class ID and the max score
+                    int class_id = -1;
+                    float max_score = 0.0f;
+                    for(int j = 0; j < NUM_CLASSES; ++j) {
+                        float score = output_data[(4 + j) * num_proposals + i];
+                        if (score > max_score) {
+                            max_score = score;
+                            class_id = j;
+                        }
+                    }
+                    
+                    
+                    if (max_score > CONFIDENCE_THRESHOLD) {
+                        // Extract box coordinates (cx, cy, w, h)
+                        float cx = output_data[0 * num_proposals + i];
+                        float cy = output_data[1 * num_proposals + i];
+                        float w = output_data[2 * num_proposals + i];
+                        float h = output_data[3 * num_proposals + i];
+                        
+                        // Convert center coordinates and dimensions to top-left corner (x, y)
+                        int x = static_cast<int>((cx - w / 2.0f) * scale_x);
+                        int y = static_cast<int>((cy - h / 2.0f) * scale_y);
+                        int width = static_cast<int>(w * scale_x);
+                        int height = static_cast<int>(h * scale_y);
+                        
+                        boxes.push_back(cv::Rect(x, y, width, height));
+                        confidences.push_back(max_score);
+                        class_ids.push_back(class_id);
                     }
                 }
-
-
-                if (max_score > CONFIDENCE_THRESHOLD) {
-                    // Extract box coordinates (cx, cy, w, h)
-                    float cx = output_data[0 * num_proposals + i];
-                    float cy = output_data[1 * num_proposals + i];
-                    float w = output_data[2 * num_proposals + i];
-                    float h = output_data[3 * num_proposals + i];
-
-                    // Convert center coordinates and dimensions to top-left corner (x, y)
-                    int x = static_cast<int>((cx - w / 2.0f) * scale_x);
-                    int y = static_cast<int>((cy - h / 2.0f) * scale_y);
-                    int width = static_cast<int>(w * scale_x);
-                    int height = static_cast<int>(h * scale_y);
-
-                    boxes.push_back(cv::Rect(x, y, width, height));
-                    confidences.push_back(max_score);
-                    class_ids.push_back(class_id);
-                }
-            }
-
-            // Apply Non-Maximum Suppression
-            std::vector<int> nms_indices;
-            cv::dnn::NMSBoxes(boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, nms_indices);
-
-            // Draw the final bounding boxes
-            for (int idx : nms_indices) {
-                cv::Rect box = boxes[idx];
-                int class_id = class_ids[idx];
-                float confidence = confidences[idx];
-
-                // Draw rectangle
-                cv::rectangle(frame, box, cv::Scalar(0, 255, 0), 2);
-
-                // Prepare label text
-                std::string label = "Unknown";
-                if (class_id >= 0 && class_id < class_names.size()) {
-                    label = class_names[class_id];
-                }
-                label += ": " + cv::format("%.2f", confidence);
-
-                // Put label text above the rectangle
-                int baseline = 0;
-                cv::Size label_size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseline);
-                cv::rectangle(frame,
-                              cv::Point(box.x, box.y - label_size.height - baseline),
-                              cv::Point(box.x + label_size.width, box.y),
-                              cv::Scalar(0, 255, 0), cv::FILLED);
-                cv::putText(frame, label, cv::Point(box.x, box.y - baseline),
-                            cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0), 1, cv::LINE_AA);
-            }
-
+                
+                // Apply Non-Maximum Suppression
+                std::vector<int> nms_indices;
+                cv::dnn::NMSBoxes(boxes, confidences, CONFIDENCE_THRESHOLD, NMS_THRESHOLD, nms_indices);
+                
+                // Draw the final bounding boxes
+                for (int idx : nms_indices) {
+                    cv::Rect box = boxes[idx];
+                    int class_id = class_ids[idx];
+                    float confidence = confidences[idx];
+                    
+                    // Draw rectangle
+                    cv::rectangle(frame, box, cv::Scalar(0, 255, 0), 2);
+                    
+                    // Prepare label text
+                    std::string label = "Unknown";
+                    if (class_id >= 0 && class_id < class_names.size()) {
+                        label = class_names[class_id];
+                    }
+                    label += ": " + cv::format("%.2f", confidence);
+                    
+                    // Put label text above the rectangle
+                    int baseline = 0;
+                    cv::Size label_size = cv::getTextSize(label, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseline);
+                    cv::rectangle(frame,
+                        cv::Point(box.x, box.y - label_size.height - baseline),
+                        cv::Point(box.x + label_size.width, box.y),
+                        cv::Scalar(0, 255, 0), cv::FILLED);
+                        cv::putText(frame, label, cv::Point(box.x, box.y - baseline),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 0), 1, cv::LINE_AA);
+                    }
+                }             
         } catch (const Ort::Exception& exception) {
             std::cerr << "ERROR running inference: " << exception.what() << std::endl;
         }
