@@ -1,10 +1,13 @@
 #include <memory>
+#include <vector>
+#include <array>
+
 
 template <typename T, size_t... Dims>
 class Tensor 
 {
     public:
-        Tensor() : m_data(calculateSize());
+        Tensor() : m_data(calculateSize()) {};
 
         explicit Tensor(T initialValue) : m_data(calculateSize(), initialValue) {}
 
@@ -14,10 +17,10 @@ class Tensor
         }
 
         template <typename... Indices>
-        T& operator() (Indices indices) 
+        const T& operator() (Indices... indices) const
         {
             static_assert(sizeof...(indices) == sizeof...(Dims), "incorrect number of instances provided");
-            size_t index = getFlatIndex(static_cast<size_t>(indices)...);
+            size_t index = getFlatIndex({static_cast<size_t>(indices)...});
             return m_data[index];
         }
 
@@ -28,23 +31,19 @@ class Tensor
             return (Dims * ... * 1);
         }
 
+        static constexpr std::array<size_t, sizeof...(Dims)> dimensions_ = {Dims...};
+
         size_t getFlatIndex(const std::vector<size_t>& indices) const
         {
             size_t index = 0;
             size_t stride = 1;
-            size_t i = sizeof...(Dims);
-            for(const auto& dim_size & {Dims...})
-            {
-                --i;
-                if(i < indices.size())
-                {
-                    if (indices[i] >= (({Dims...})[i]))
-                    {
-                        throw std::out_of_range("Index out of range");
-                    }
-                    index += indices[i] * stride;
+            for (int i = sizeof...(Dims) - 1; i >= 0; --i) {
+                // Bounds checking
+                if (indices[i] >= dimensions_[i]) {
+                    throw std::out_of_range("Index out of range.");
                 }
-                stride *= dim_size;
+                index += indices[i] * stride;
+                stride *= dimensions_[i];
             }
             return index;
         }
