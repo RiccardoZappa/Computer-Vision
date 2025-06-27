@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
+#include "../src/tensor.hpp"
 
 // Demonstrate some basic assertions.
 TEST(HelloTest, BasicAssertions) {
-  // Expect two strings not to be equal.
-  EXPECT_STRNE("hello", "world");
-  // Expect equality.
-  EXPECT_EQ(7 * 6, 42);
+    Tensor<int, 3, 3, 3> MyTensor(0);
+    int element =  MyTensor(2,0,0);
+    ASSERT_EQ(0, MyTensor(2,0,0));
 }
