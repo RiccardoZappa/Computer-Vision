@@ -9,7 +9,7 @@ int main()
         int element =  MyTensor(3,0,0);
 
     }
-    catch(std::out_of_range& exception)
+    catch(const std::out_of_range& exception)
     {
         std::cout << "caught an exception!!"<< std::endl;
         std::cout << "Error: " << exception.what() << std::endl;
