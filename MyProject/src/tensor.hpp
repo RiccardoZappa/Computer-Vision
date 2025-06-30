@@ -24,6 +24,16 @@ class Tensor
             return m_data[index];
         }
 
+        T* getData()
+        {
+            return m_data.data();
+        }
+
+        const T* getData() const
+        {
+            return m_data.data();
+        }
+
     private:
 
         static constexpr size_t calculateSize()
@@ -37,8 +47,8 @@ class Tensor
         {
             size_t index = 0;
             size_t stride = 1;
-            for (int i = sizeof...(Dims) - 1; i >= 0; --i) {
-                // Bounds checking
+            for (int i = sizeof...(Dims) - 1; i >= 0; --i) 
+            {
                 if (indices[i] >= dimensions_[i]) {
                     throw std::out_of_range("Index out of range.");
                 }

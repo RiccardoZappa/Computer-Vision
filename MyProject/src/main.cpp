@@ -7,7 +7,7 @@ int main()
     try{
         Tensor<int, 3, 3, 3> MyTensor(0);
         int element =  MyTensor(3,0,0);
-
+        const auto data = MyTensor.getData();
     }
     catch(const std::out_of_range& exception)
     {
