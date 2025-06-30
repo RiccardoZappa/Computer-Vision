@@ -11,6 +11,13 @@ class Tensor
 
         explicit Tensor(T initialValue) : m_data(calculateSize(), initialValue) {}
 
+        Tensor(Tensor& t) = default;
+        Tensor& operator=(const Tensor& t) = default;
+
+        Tensor(Tensor&& t) noexcept = default;
+        Tensor& operator=(Tensor&& t) noexcept = default;
+
+
         static constexpr size_t size()
         {
             return calculateSize();
