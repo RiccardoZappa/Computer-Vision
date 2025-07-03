@@ -11,6 +11,13 @@ struct Factorial<0>{
     static const int value = 1;
 };
 
+constexpr long long factorial(int n)
+{
+    if (n <= 1)
+        return 1;
+    return n * factorial(n-1);
+}
+
 int main()
 {
     std::cout << "Hello world!" << std::endl;
