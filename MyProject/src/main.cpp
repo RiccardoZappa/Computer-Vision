@@ -1,5 +1,6 @@
 #include <iostream>
 #include "tensor.hpp"
+#include "memoryManagement/memoryManagement.hpp"
 
 template<int N>
 struct Factorial {
@@ -22,6 +23,7 @@ int main()
 {
     std::cout << "Hello world!" << std::endl;
     try{
+        memoryManagement::useRawPointer();
         Tensor<int, 3, 3, 3> MyTensor(0);
         int element =  MyTensor(3,0,0);
         const auto data = MyTensor.getData();
