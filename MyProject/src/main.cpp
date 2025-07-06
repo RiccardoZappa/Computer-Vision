@@ -24,6 +24,9 @@ int main()
     std::cout << "Hello world!" << std::endl;
     try{
         memoryManagement::useRawPointer();
+
+        memoryManagement::useUniquePointer();
+        
         Tensor<int, 3, 3, 3> MyTensor(0);
         int element =  MyTensor(3,0,0);
         const auto data = MyTensor.getData();
