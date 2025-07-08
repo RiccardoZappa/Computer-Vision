@@ -18,6 +18,7 @@ enable_testing()
 # --- Project Sources and Executable ---
 add_executable(my_project
     src/main.cpp
+    src/cudaOperations/cudaOperations.cu
 )
 
 add_executable(runUnitTests
