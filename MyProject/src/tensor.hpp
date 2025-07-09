@@ -17,6 +17,11 @@ class Tensor
         Tensor(Tensor&& t) noexcept = default;
         Tensor& operator=(Tensor&& t) noexcept = default;
 
+        template<typename Scalar>
+        Tensor operator*(Scalar scalar)
+        {
+            return;
+        }
 
         static constexpr size_t size()
         {
